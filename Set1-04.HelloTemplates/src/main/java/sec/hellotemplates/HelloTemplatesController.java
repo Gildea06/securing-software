@@ -6,4 +6,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class HelloTemplatesController {
 
+    @RequestMapping("/")
+    public String home() {
+        return "index";
+    }
+
+    @RequestMapping("/video")
+    public String vide() {
+        return "video";
+    }
+
+
 }
+
