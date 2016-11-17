@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Scanner;
+
 import org.h2.tools.RunScript;
 
 public class HelloInsert {
@@ -30,7 +31,36 @@ public class HelloInsert {
         // Add the code that first reads the agents from the database, then
         // asks for an agent (id and name) and stores the agent to the database.
         // Finally, the program prints the agents in the database again.
+        ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM Agent");
 
+        while (resultSet.next()) {
+            String id = resultSet.getString("id");
+            String name = resultSet.getString("name");
+            System.out.println(id + "\t" + name);
+        }
+
+        Scanner reader = new Scanner(System.in);
+        System.out.println("Add one:");
+        System.out.println("What id?");
+        String newId = reader.nextLine().toString();
+        System.out.println("What name?");
+        String newName = reader.nextLine().toString();
+
+
+        PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO Agent (id, name) VALUES (?,?)");
+        preparedStatement.setString(1, newId);
+        preparedStatement.setString(2, newName);
+        preparedStatement.executeUpdate();
+
+        resultSet = connection.createStatement().executeQuery("SELECT * FROM Agent");
+
+        while (resultSet.next()) {
+            String id = resultSet.getString("id");
+            String name = resultSet.getString("name");
+            System.out.println(id + "\t" + name);
+        }
+
+        resultSet.close();
         connection.close();
     }
 }
