@@ -4,6 +4,7 @@ import java.io.FileReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+
 import org.h2.tools.RunScript;
 
 public class HelloDatabase {
@@ -27,5 +28,16 @@ public class HelloDatabase {
 
         // Add the code that reads the Agents from the database 
         // and prints them here
+        ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM Agent");
+
+        while (resultSet.next()) {
+            String id = resultSet.getString("id");
+            String name = resultSet.getString("name");
+
+            System.out.println(id + "\t" + name);
+        }
+
+        resultSet.close();
+        connection.close();
     }
 }
