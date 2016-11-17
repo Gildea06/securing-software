@@ -1,30 +1,48 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-    <head lang="en">
-        <meta charset="UTF-8" />
-        <title>Tasks</title>
-    </head>
-    <body>
+<head lang="en">
+    <meta charset="UTF-8"/>
+    <title>Tasks</title>
+</head>
+<body>
 
-        <h2>Tasks</h2>
+<h2>Tasks</h2>
 
-        <!-- TODO: add the ability to list tasks -->
-        <ul id="tasks">
-        </ul>
+<!-- TODO: add the ability to list tasks -->
+<ul id="tasks">
+</ul>
 
 
-        <form>
-            <input type="text" name="name" id="name"/>
-            <input type="button" onclick="addTask();" value="Add!"/>
-        </form>
+<form>
+    <input type="text" name="name" id="name"/>
+    <input type="button" onclick="addTask();" value="Add!"/>
+</form>
 
-        <!-- the javascript has been embedded to the same site -->
-        <script th:inline="javascript">
+<!-- the javascript has been embedded to the same site -->
+<script th:inline="javascript">
             // The URL to the application server that holds the tasks.
             var url = /*[[@{/tasks}]]*/ null;
 
             function loadTasks() {
-                alert("hello world! it'd be nice if i would load the tasks from the server and show them on this page.");
+                <!--alert("hello world! it'd be nice if i would load the tasks from the server and show them on this page.");-->
+                var xmlHttp = new XMLHttpRequest();
+
+
+                xmlHttp.onreadystatechange = function() {
+                    if (xmlHttp.readyState == 4) {
+                        if(xmlHttp.status == 200) {
+                        var response = JSON.parse(xmlHttp.responseText);
+                        var liElement = document.createElement("li");
+                        liElement.appendChild(document.createTextNode(response[0].name));
+                        document.querySelector("#tasks").appendChild(liElement);
+                        }
+                    }
+                }
+
+                xmlHttp.open("GET", url, true);
+                xmlHttp.send(null);
+
+
             }
 
             function addTask() {
@@ -63,6 +81,45 @@
             window.onload = function () {
                 loadTasks();
             };
-        </script>
-    </body>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+</body>
 </html>
