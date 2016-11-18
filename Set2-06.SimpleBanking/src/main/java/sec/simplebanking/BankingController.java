@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Controller
 public class BankingController {
 
@@ -22,7 +25,7 @@ public class BankingController {
     }
 
     @RequestMapping(value = "/", method = RequestMethod.POST)
-    public String add(@RequestParam String name, @RequestParam String iban) {
+    public String add(Model model, @RequestParam String name, @RequestParam String iban) {
         if (name.trim().isEmpty() || iban.trim().isEmpty()) {
             return "redirect:/";
         }
@@ -43,7 +46,11 @@ public class BankingController {
         }
 
         // DO SOMETHING HERE
-
+        List<Account> accountList = new ArrayList<>();
+        accountList.add(account);
+        client.setAccounts(accountList);
+        clientRepository.save(client);
+        model.addAttribute("clients", clientRepository.findAll());
         return "redirect:/";
     }
 }
