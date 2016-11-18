@@ -1,8 +1,10 @@
 package sec.banktransfer;
 
 import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -39,9 +41,20 @@ public class BankingController {
         return "index";
     }
 
+    @Transactional
     @RequestMapping(value = "/", method = RequestMethod.POST)
     public String transfer(@RequestParam String from, @RequestParam String to, @RequestParam Integer amount) {
         Account accountFrom = accountRepository.findByIban(from);
+
+        if (amount < 0) {
+            return "amountLessThanZero";
+        }
+
+        if (amount > accountFrom.getBalance()) {
+            return "error";
+        }
+
+
         Account accountTo = accountRepository.findByIban(to);
 
         accountFrom.setBalance(accountFrom.getBalance() - amount);
