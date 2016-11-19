@@ -2,7 +2,10 @@ package sec.megaupload.controller;
 
 import sec.megaupload.repository.FileRepository;
 import sec.megaupload.domain.FileObject;
+
 import java.io.IOException;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -24,7 +27,7 @@ public class FileController {
 
     @Autowired
     private FileRepository fileRepository;
-    
+
     @Autowired
     private AccountRepository accountRepository;
 
@@ -35,8 +38,14 @@ public class FileController {
     }
 
     @RequestMapping(value = "/files/{id}", method = RequestMethod.GET)
-    public ResponseEntity<byte[]> viewFile(@PathVariable Long id) {
+    public ResponseEntity<byte[]> viewFile(Authentication authentication, @PathVariable Long id) {
+
+        Account account = accountRepository.findByUsername(authentication.getName());
         FileObject fo = fileRepository.findOne(id);
+
+        if (!account.getFileObjects().contains(fo)) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
 
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.parseMediaType(fo.getContentType()));
@@ -49,17 +58,17 @@ public class FileController {
     @RequestMapping(value = "/files", method = RequestMethod.POST)
     public String addFile(Authentication authentication, @RequestParam("file") MultipartFile file) throws IOException {
         Account account = accountRepository.findByUsername(authentication.getName());
-        
-        
+
+
         FileObject fileObject = new FileObject();
         fileObject.setContentType(file.getContentType());
         fileObject.setContent(file.getBytes());
         fileObject.setName(file.getOriginalFilename());
         fileObject.setContentLength(file.getSize());
         fileObject.setAccount(account);
-        
+
         fileRepository.save(fileObject);
-        
+
 
         return "redirect:/files";
     }
