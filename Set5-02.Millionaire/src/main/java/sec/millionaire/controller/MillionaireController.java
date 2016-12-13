@@ -57,19 +57,14 @@ public class MillionaireController {
             List<DifficultyLevel> difficultyLevels = difficultyLevelRepository.findByTopic(topic);
             Long max = difficultyLevels.stream().map(d -> d.getLevel()).max(Long::compareTo).get();
             if (levelId > max) {
-                return "thanks";
+                session.removeAttribute("level");
+                session.removeAttribute("topic");
+                session.removeAttribute("question");
+                userDetailsRepository.save(details);
             }
         } catch (Exception e) {
-            session.removeAttribute("level");
-            session.removeAttribute("topic");
-            session.removeAttribute("question");
             return "cheater";
         }
-        session.removeAttribute("level");
-        session.removeAttribute("topic");
-        session.removeAttribute("question");
-
-        userDetailsRepository.save(details);
 
         return "thanks";
     }
